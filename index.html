@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Instagram Influencer Profile Dashboard</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            color: white;
+        }
+
+        .search-bar {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .search-input {
+            width: 300px;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 25px;
+            font-size: 16px;
+            margin-right: 15px;
+            background: rgba(255, 255, 255, 0.9);
+        }
+
+        .search-btn {
+            padding: 12px 25px;
+            background: linear-gradient(45deg, #405DE6, #5851DB);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: transform 0.2s;
+        }
+
+        .search-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .profile-section {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .profile-pic {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 4px solid #405DE6;
+            object-fit: cover;
+        }
+
+        .profile-info h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #405DE6, #5851DB);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .profile-stats {
+            display: flex;
+            gap: 40px;
+            margin-top: 20px;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2em;
+            font-weight: bold;
+            color: #405DE6;
+        }
+
+        .engagement-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .engagement-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin-top: 20px;
+        }
+
+        .posts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .post-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .post-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .post-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .post-content {
+            padding: 20px;
+        }
+
+        .post-stats {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+
+        .tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 15px;
+        }
+
+        .tag {
+            background: linear-gradient(45deg, #405DE6, #5851DB);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+        }
+
+        .vibe-indicator {
+            display: inline-block;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        .vibe-aesthetic { background: #FFE0E6; color: #D63384; }
+        .vibe-luxury { background: #FFF3CD; color: #856404; }
+        .vibe-casual { background: #D1ECF1; color: #055160; }
+        .vibe-energetic { background: #D4EDDA; color: #155724; }
+
+        .reels-section {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .reels-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .reel-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .demographics-section {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .demographics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 20px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 50px;
+            font-size: 18px;
+            color: #666;
+        }
+
+        .loading-spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #405DE6;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        @media (max-width: 768px) {
+            .profile-header {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .profile-stats {
+                justify-content: center;
+            }
+            
+            .engagement-section {
+                grid-template-columns: 1fr;
+            }
+            
+            .search-input {
+                width: 100%;
+                margin-bottom: 15px;
+                margin-right: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📸 Instagram Influencer Analytics</h1>
+            <p>Comprehensive profile analysis with AI-powered insights</p>
+        </div>
+
+        <div class="search-bar">
+            <input type="text" class="search-input" id="usernameInput" placeholder="Enter Instagram username (e.g., cristiano)" value="cristiano">
+            <button class="search-btn" onclick="loadInfluencerProfile()">🔍 Analyze Profile</button>
+        </div>
+
+        <div id="loadingState" class="loading" style="display: none;">
+            <div class="loading-spinner"></div>
+            <p>Analyzing profile and processing data...</p>
+        </div>
+
+        <div id="errorState" class="error" style="display: none;"></div>
+
+        <div id="profileContent" style="display: none;">
+            <!-- Profile Section -->
+            <div class="profile-section">
+                <div class="profile-header">
+                    <img id="profilePic" src="" alt="Profile Picture" class="profile-pic">
+                    <div class="profile-info">
+                        <h1 id="influencerName">Loading...</h1>
+                        <h2 id="username">@loading...</h2>
+                        <div class="profile-stats">
+                            <div class="stat-item">
+                                <div class="stat-number" id="followersCount">0</div>
+                                <div>Followers</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-number" id="followingCount">0</div>
+                                <div>Following</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-number" id="postsCount">0</div>
+                                <div>Posts</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Engagement Analytics -->
+            <div class="engagement-section">
+                <div class="engagement-card">
+                    <h3>📊 Engagement Analytics</h3>
+                    <div class="chart-container">
+                        <canvas id="engagementChart"></canvas>
+                    </div>
+                </div>
+                <div class="engagement-card">
+                    <h3>📈 Performance Metrics</h3>
+                    <div class="chart-container">
+                        <canvas id="performanceChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Posts -->
+            <div class="profile-section">
+                <h2>📷 Recent Posts Analysis</h2>
+                <div class="posts-grid" id="postsGrid">
+                    <!-- Posts will be populated here -->
+                </div>
+            </div>
+
+            <!-- Recent Reels -->
+            <div class="reels-section">
+                <h2>🎬 Recent Reels Analysis</h2>
+                <div class="reels-grid" id="reelsGrid">
+                    <!-- Reels will be populated here -->
+                </div>
+            </div>
+
+            <!-- Demographics -->
+            <div class="demographics-section">
+                <h2>👥 Audience Demographics Analysis</h2>
+                <div class="demographics-grid">
+                    <div>
+                        <h3>Gender Distribution</h3>
+                        <canvas id="genderChart"></canvas>
+                    </div>
+                    <div>
+                        <h3>Age Groups</h3>
+                        <canvas id="ageChart"></canvas>
+                    </div>
+                    <div>
+                        <h3>Geographic Distribution</h3>
+                        <canvas id="geoChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Mock data and API simulation
+        const mockInfluencerData = {
+            cristiano: {
+                name: "Cristiano Ronaldo",
+                username: "@cristiano",
+                profilePic: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=150&h=150&fit=crop&crop=face",
+                followers: 634000000,
+                following: 563,
+                posts: 3420,
+                avgLikes: 8500000,
+                avgComments: 125000,
+                engagementRate: 2.8,
+                recentPosts: [
+                    {
+                        id: 1,
+                        image: "https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=300&h=300&fit=crop",
+                        caption: "Training hard for the next game! 💪⚽",
+                        likes: 9200000,
+                        comments: 148000,
+                        tags: ["sport", "football", "training", "fitness"],
+                        vibe: "energetic",
+                        quality: "high"
+                    },
+                    {
+                        id: 2,
+                        image: "https://images.unsplash.com/photo-1544717297-fa95b6ee9643?w=300&h=300&fit=crop",
+                        caption: "Family time is the best time ❤️👨‍👩‍👧‍👦",
+                        likes: 12500000,
+                        comments: 215000,
+                        tags: ["family", "lifestyle", "love"],
+                        vibe: "casual",
+                        quality: "high"
+                    },
+                    {
+                        id: 3,
+                        image: "https://images.unsplash.com/photo-1594736797933-d0eeaa65e8f8?w=300&h=300&fit=crop",
+                        caption: "Victory celebration! What a match! 🏆⚽",
+                        likes: 11800000,
+                        comments: 185000,
+                        tags: ["celebration", "victory", "football", "trophy"],
+                        vibe: "energetic",
+                        quality: "high"
+                    }
+                ],
+                recentReels: [
+                    {
+                        id: 1,
+                        thumbnail: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=250&h=300&fit=crop",
+                        caption: "Skills showcase 🔥⚽",
+                        views: 45000000,
+                        likes: 3200000,
+                        comments: 89000,
+                        tags: ["skills", "football", "showcase"],
+                        vibe: "energetic"
+                    },
+                    {
+                        id: 2,
+                        thumbnail: "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=250&h=300&fit=crop",
+                        caption: "Behind the scenes training",
+                        views: 32000000,
+                        likes: 2800000,
+                        comments: 67000,
+                        tags: ["training", "behind-scenes", "workout"],
+                        vibe: "casual"
+                    }
+                ],
+                demographics: {
+                    gender: { male: 65, female: 35 },
+                    age: { "13-17": 15, "18-24": 35, "25-34": 30, "35-44": 15, "45+": 5 },
+                    geography: { "Europe": 30, "Asia": 25, "Americas": 25, "Africa": 15, "Oceania": 5 }
+                }
+            }
+        };
+
+        let currentData = null;
+
+        function formatNumber(num) {
+            if (num >= 1000000000) {
+                return (num / 1000000000).toFixed(1) + 'B';
+            }
+            if (num >= 1000000) {
+                return (num / 1000000).toFixed(1) + 'M';
+            }
+            if (num >= 1000) {
+                return (num / 1000).toFixed(1) + 'K';
+            }
+            return num.toString();
+        }
+
+        function getVibeClass(vibe) {
+            switch(vibe) {
+                case 'aesthetic': return 'vibe-aesthetic';
+                case 'luxury': return 'vibe-luxury';
+                case 'casual': return 'vibe-casual';
+                case 'energetic': return 'vibe-energetic';
+                default: return 'vibe-casual';
+            }
+        }
+
+        function showLoading() {
+            document.getElementById('loadingState').style.display = 'block';
+            document.getElementById('errorState').style.display = 'none';
+            document.getElementById('profileContent').style.display = 'none';
+        }
+
+        function hideLoading() {
+            document.getElementById('loadingState').style.display = 'none';
+        }
+
+        function showError(message) {
+            document.getElementById('errorState').textContent = message;
+            document.getElementById('errorState').style.display = 'block';
+            document.getElementById('profileContent').style.display = 'none';
+        }
+
+        function showProfile() {
+            document.getElementById('errorState').style.display = 'none';
+            document.getElementById('profileContent').style.display = 'block';
+        }
+
+        function loadInfluencerProfile() {
+            const username = document.getElementById('usernameInput').value.trim().replace('@', '');
+            
+            if (!username) {
+                showError('Please enter a valid Instagram username');
+                return;
+            }
+
+            showLoading();
+
+            // Simulate API call delay
+            setTimeout(() => {
+                const data = mockInfluencerData[username.toLowerCase()];
+                
+                if (!data) {
+                    showError(`Profile not found for @${username}. Try 'cristiano' for demo.`);
+                    hideLoading();
+                    return;
+                }
+
+                currentData = data;
+                populateProfile(data);
+                hideLoading();
+                showProfile();
+            }, 2000);
+        }
+
+        function populateProfile(data) {
+            // Basic profile info
+            document.getElementById('profilePic').src = data.profilePic;
+            document.getElementById('influencerName').textContent = data.name;
+            document.getElementById('username').textContent = data.username;
+            document.getElementById('followersCount').textContent = formatNumber(data.followers);
+            document.getElementById('followingCount').textContent = formatNumber(data.following);
+            document.getElementById('postsCount').textContent = formatNumber(data.posts);
+
+            // Posts
+            const postsGrid = document.getElementById('postsGrid');
+            postsGrid.innerHTML = '';
+            
+            data.recentPosts.forEach(post => {
+                const postCard = document.createElement('div');
+                postCard.className = 'post-card';
+                postCard.innerHTML = `
+                    <img src="${post.image}" alt="Post" class="post-image">
+                    <div class="post-content">
+                        <div class="post-stats">
+                            <span>❤️ ${formatNumber(post.likes)}</span>
+                            <span>💬 ${formatNumber(post.comments)}</span>
+                        </div>
+                        <p>${post.caption}</p>
+                        <div class="vibe-indicator ${getVibeClass(post.vibe)}">${post.vibe}</div>
+                        <div class="tags">
+                            ${post.tags.map(tag => `<span class="tag">#${tag}</span>`).join('')}
+                        </div>
+                    </div>
+                `;
+                postsGrid.appendChild(postCard);
+            });
+
+            // Reels
+            const reelsGrid = document.getElementById('reelsGrid');
+            reelsGrid.innerHTML = '';
+            
+            data.recentReels.forEach(reel => {
+                const reelCard = document.createElement('div');
+                reelCard.className = 'reel-card';
+                reelCard.innerHTML = `
+                    <img src="${reel.thumbnail}" alt="Reel" class="post-image">
+                    <div class="post-content">
+                        <div class="post-stats">
+                            <span>👁️ ${formatNumber(reel.views)}</span>
+                            <span>❤️ ${formatNumber(reel.likes)}</span>
+                        </div>
+                        <p>${reel.caption}</p>
+                        <div class="vibe-indicator ${getVibeClass(reel.vibe)}">${reel.vibe}</div>
+                        <div class="tags">
+                            ${reel.tags.map(tag => `<span class="tag">#${tag}</span>`).join('')}
+                        </div>
+                    </div>
+                `;
+                reelsGrid.appendChild(reelCard);
+            });
+
+            // Charts
+            createCharts(data);
+        }
+
+        function createCharts(data) {
+            // Engagement Chart
+            const engagementCtx = document.getElementById('engagementChart').getContext('2d');
+            new Chart(engagementCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Likes', 'Comments', 'Shares'],
+                    datasets: [{
+                        data: [data.avgLikes, data.avgComments, data.avgLikes * 0.1],
+                        backgroundColor: ['#405DE6', '#5851DB', '#833AB4'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+
+            // Performance Chart
+            const performanceCtx = document.getElementById('performanceChart').getContext('2d');
+            new Chart(performanceCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Engagement Rate', 'Avg Likes', 'Avg Comments'],
+                    datasets: [{
+                        label: 'Performance Metrics',
+                        data: [data.engagementRate, data.avgLikes / 1000000, data.avgComments / 10000],
+                        backgroundColor: ['#405DE6', '#5851DB', '#833AB4'],
+                        borderRadius: 10
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+
+            // Demographics Charts
+            const genderCtx = document.getElementById('genderChart').getContext('2d');
+            new Chart(genderCtx, {
+                type: 'pie',
+                data: {
+                    labels: ['Male', 'Female'],
+                    datasets: [{
+                        data: [data.demographics.gender.male, data.demographics.gender.female],
+                        backgroundColor: ['#405DE6', '#833AB4']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+
+            const ageCtx = document.getElementById('ageChart').getContext('2d');
+            new Chart(ageCtx, {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(data.demographics.age),
+                    datasets: [{
+                        label: 'Age Distribution',
+                        data: Object.values(data.demographics.age),
+                        backgroundColor: '#5851DB',
+                        borderRadius: 5
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Percentage'
+                            }
+                        }
+                    }
+                }
+            });
+
+            const geoCtx = document.getElementById('geoChart').getContext('2d');
+            new Chart(geoCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(data.demographics.geography),
+                    datasets: [{
+                        data: Object.values(data.demographics.geography),
+                        backgroundColor: ['#405DE6', '#5851DB', '#833AB4', '#C13584', '#FD1D1D']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+        }
+
+        // Load demo profile on page load
+        window.addEventListener('load', function() {
+            setTimeout(() => {
+                loadInfluencerProfile();
+            }, 1000);
+        });
+
+        // Enter key support for search
+        document.getElementById('usernameInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                loadInfluencerProfile();
+            }
+        });
+    </script>
+</body>
+</html>
